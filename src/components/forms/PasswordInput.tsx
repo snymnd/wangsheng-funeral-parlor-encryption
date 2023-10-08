@@ -66,7 +66,13 @@ export default function PasswordInput({
     <div className={containerClassName}>
       <div className={clsx('flex items-center justify-between')}>
         {withLabel && (
-          <Typography as='label' variant='s2' className='block' htmlFor={id}>
+          <Typography
+            as='label'
+            variant='s3'
+            className='block'
+            color='secondary'
+            htmlFor={id}
+          >
             {label}
           </Typography>
         )}

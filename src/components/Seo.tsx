@@ -4,13 +4,13 @@ import { useRouter } from 'next/router';
 import { openGraph } from '@/lib/helper';
 
 const defaultMeta = {
-  title: 'Fil In',
-  siteName: 'localhost',
-  description: 'Starter-Pack',
-  url: 'https://localhost',
+  title: 'Wangsheng Funeral Parlor',
+  siteName: 'WFP',
+  description: 'Wangseng Funeral Parlor, where you can find the real peace.',
+  url: 'https://wfp',
   type: 'website',
   robots: 'follow, index',
-  image: 'https://localhost/images/large-og.png',
+  image: 'https://wfp/images/large-og.png',
 };
 
 type SeoProps = {
