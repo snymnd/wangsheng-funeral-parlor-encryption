@@ -55,7 +55,13 @@ export default function DatePicker({
   return (
     <div className={clsxm('relative', containerClassName)}>
       {withLabel && (
-        <Typography as='label' variant='s3' className='block' htmlFor={id}>
+        <Typography
+          as='label'
+          variant='s3'
+          color='secondary'
+          className='block'
+          htmlFor={id}
+        >
           {label}
         </Typography>
       )}

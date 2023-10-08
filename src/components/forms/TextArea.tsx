@@ -37,7 +37,13 @@ export default function TextArea({
   return (
     <div className={containerClassName}>
       {withLabel && (
-        <Typography as='label' variant='s3' className='block' htmlFor={id}>
+        <Typography
+          as='label'
+          variant='s3'
+          className='block'
+          color='secondary'
+          htmlFor={id}
+        >
           {label}
         </Typography>
       )}
