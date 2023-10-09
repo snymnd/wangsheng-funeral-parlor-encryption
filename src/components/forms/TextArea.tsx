@@ -60,8 +60,10 @@ export default function TextArea({
             'block w-full rounded text-base-1000 shadow-sm',
             'border-gray-300 focus:border-primary-600 focus:ring-primary-600',
             'plcaeholder:text-neutral-secondary',
-            (readOnly || disabled) &&
+            disabled &&
               'cursor-not-allowed border-gray-300 bg-gray-100 focus:border-gray-300 focus:ring-0',
+            readOnly &&
+              'cursor-default border-primary-600 bg-transparent text-white',
             error && 'border-red-500 focus:border-red-500 focus:ring-red-500'
           )}
           placeholder={placeholder}

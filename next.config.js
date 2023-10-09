@@ -10,7 +10,17 @@ const nextConfig = {
 
   // Uncoment to add domain whitelist
   images: {
-    domains: ['i.pravatar.cc'],
+    domains: ['188.166.179.200:8080'],
+  },
+
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/profile',
+        permanent: true,
+      },
+    ];
   },
 
   // SVGR

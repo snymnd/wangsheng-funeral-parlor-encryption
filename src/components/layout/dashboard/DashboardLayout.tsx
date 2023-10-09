@@ -1,15 +1,15 @@
 import clsx from 'clsx';
+import { User } from 'lucide-react';
+import { Folder } from 'lucide-react';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { IconType } from 'react-icons';
-import { IoWalletOutline } from 'react-icons/io5';
 
 import DashboardHeader from '@/components/layout/dashboard/DashboardHeader';
 import Layout from '@/components/layout/Layout';
 import UnstyledLink from '@/components/links/UnstyledLink';
 import Typography from '@/components/typography/Typography';
 
-import Dashboard from '~/svg/Dashboard.svg';
 import DefaultAvatar from '~/svg/DefaultAvatar.svg';
 
 type Navigation = {
@@ -25,15 +25,15 @@ type Navigation = {
 
 const dashboardNavigation: Navigation[] = [
   {
-    name: 'Dashboard',
-    href: '/sandbox/dashboard',
-    icon: Dashboard,
+    name: 'Profile',
+    href: '/profile',
+    icon: User,
     exactMatch: true,
   },
   {
-    name: 'Wallet',
-    href: '/#',
-    icon: IoWalletOutline,
+    name: 'My Files',
+    href: '/files',
+    icon: Folder,
   },
 ];
 
@@ -82,27 +82,26 @@ export default function DashboardLayout({
                 >
                   <DefaultAvatar className='h-28 w-28 text-neutral-white sm:h-36 sm:w-36' />
                   <div className={clsx([isOpen ? 'block' : 'hidden'])}>
-                    <UnstyledLink href='/profile' className='text-center'>
+                    <div className='text-center'>
                       <Typography variant='s2' className='mt-2'>
                         Kim Dahyuns
                       </Typography>
                       <Typography variant='b2' color='secondary'>
                         @dubuuu
                       </Typography>
-                    </UnstyledLink>
+                    </div>
                   </div>
                 </div>
                 {/* Meta info */}
                 <div className='group flex flex-col'>
-                  <UnstyledLink
-                    href='/profile'
+                  <div
                     className={clsx(
-                      'flex w-16 items-center py-3 pl-4 text-xs font-medium hover:bg-base-800',
+                      'flex w-16 items-center py-3 pl-4 text-xs font-medium',
                       isOpen ? 'hidden' : 'inline'
                     )}
                   >
                     <DefaultAvatar className='ml-[2px] h-7 w-7 text-neutral-white' />
-                  </UnstyledLink>
+                  </div>
 
                   {dashboardNavigation.map((nav) => {
                     const isActive = nav.exactMatch
