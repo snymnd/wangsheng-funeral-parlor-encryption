@@ -1,7 +1,7 @@
 const REGEX = {
   NUMBER: /^\d+$/,
   NUMBER_AND_DECIMAL: /^\d+(\.\d+)?$/,
-  PHONE_NUMBER: /^628[1-9][0-9]{7,11}$/,
+  PHONE_NUMBER: /^8[0-9][0-9]{7,11}$/,
   /** @see https://github.com/colinhacks/zod/blob/ac0135e00df75abd57a93a4816fe0fdaa31e94e8/deno/lib/types.ts#L553 */
   EMAIL:
     // eslint-disable-next-line no-useless-escape

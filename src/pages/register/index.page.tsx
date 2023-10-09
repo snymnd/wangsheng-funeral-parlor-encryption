@@ -19,8 +19,9 @@ import Typography from '@/components/typography/Typography';
 
 import REGEX from '@/constant/regex';
 
-type RegisterForm = {
+export type RegisterForm = {
   name: string;
+  phone_number: string;
   username: string;
   gender: 'male' | 'female';
   password_: string;
@@ -31,9 +32,10 @@ type RegisterForm = {
   religion: string;
   address: string;
   nationality: 'indonesia' | 'outside';
+  profile_picture?: string;
 };
 
-const RELIGION_OPTIONS = [
+export const RELIGION_OPTIONS = [
   { value: 'islam', label: 'Islam' },
   { value: 'kristen', label: 'Kristen' },
   { value: 'katolik', label: 'Katolik' },
@@ -140,14 +142,37 @@ export default function RegisterPage() {
                               id='birth_place'
                               containerClassName='flex-1 min-w-[200px]'
                               label='Place of Birth'
+                              placeholder='Enter your place of birth'
                             />
                             <DatePicker
                               id='birth_date'
                               label='Date of Birth'
                               containerClassName='flex-1 min-w-[200px]'
                               maxDate={new Date()}
+                              validation={{
+                                required: 'Date of Birth must be filled',
+                              }}
+                              placeholder='dd/mm/yyyy'
                             />
                           </div>
+
+                          <Input
+                            id='phone'
+                            label='Phone Number'
+                            validation={{
+                              required: 'Phone number must be filled',
+                              pattern: {
+                                value: REGEX.PHONE_NUMBER,
+                                message: 'Phone number must be valid',
+                              },
+                            }}
+                            placeholder={`Phone number start with '8'`}
+                            leftNode={
+                              <Typography variant='b2' color='tertiary'>
+                                +62 |
+                              </Typography>
+                            }
+                          />
 
                           <div className='space-y-1'>
                             <Typography variant='s3' color='secondary'>
@@ -189,7 +214,7 @@ export default function RegisterPage() {
                           <SearchableSelectInput
                             id='nationality'
                             label='Nationality'
-                            placeholder='Chose yout nationality type'
+                            placeholder='Chose your nationality type'
                             options={[
                               { value: 'indonesia', label: 'Indonesia' },
                               {
@@ -197,10 +222,14 @@ export default function RegisterPage() {
                                 label: 'Outside of Indonesia',
                               },
                             ]}
+                            validation={{
+                              required: 'Nationality must be filled',
+                            }}
                           />
                           <TextArea
                             id='address'
                             label='Address'
+                            placeholder='Enter your address'
                             validation={{ required: 'Address must be filled' }}
                           />
 

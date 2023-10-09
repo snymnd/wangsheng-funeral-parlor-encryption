@@ -31,6 +31,7 @@ export type InputProps = {
   validation?: RegisterOptions;
   leftIcon?: IconType | string;
   rightNode?: React.ReactNode;
+  leftNode?: React.ReactNode;
   containerClassName?: string;
   /**
    * You must set maxLength in validation if you want to use this prop
@@ -51,6 +52,7 @@ export default function Input({
   validation,
   leftIcon: LeftIcon,
   rightNode,
+  leftNode,
   containerClassName,
   withWordCounter = false,
   ...rest
@@ -98,6 +100,12 @@ export default function Input({
             )}
           </div>
         )}
+        {leftNode && (
+          <div className='absolute inset-y-0 left-0 flex items-center pl-3'>
+            {leftNode}
+          </div>
+        )}
+
         <input
           {...register(id, validation)}
           {...rest}
@@ -111,9 +119,12 @@ export default function Input({
             'min-h-[2.25rem] py-0 md:min-h-[2.5rem]',
             'border-gray-300 focus:border-primary-600 focus:ring-primary-600',
             'text-base-1000 placeholder:text-neutral-secondary',
-            (readOnly || disabled) &&
+            leftNode && 'pl-14',
+            disabled &&
               'cursor-not-allowed border-gray-300 bg-gray-100 focus:border-gray-300 focus:ring-0',
             error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
+            readOnly &&
+              'cursor-default border-primary-600 bg-transparent text-white',
             LeftIcon && 'pl-9',
             rightNode && 'pr-10'
           )}

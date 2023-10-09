@@ -57,15 +57,20 @@ export default function Radio({
             'shrink-0 cursor-pointer appearance-none',
             'focus:outline-none focus:ring-0 focus:ring-offset-0',
             'checked:bg-primary-600 checked:hover:bg-primary-600 checked:focus:bg-primary-600 checked:active:bg-primary-700',
-            (readOnly || disabled) &&
+            disabled &&
               'cursor-not-allowed bg-base-100 disabled:checked:bg-primary-400',
+            readOnly &&
+              'cursor-default border-primary-600 bg-transparent text-white',
             error && 'border-danger-500'
           )}
           placeholder={placeholder}
           aria-describedby={name}
         />
         <Typography
-          className={clsx((readOnly || disabled) && 'cursor-not-allowed')}
+          className={clsx([
+            disabled && 'cursor-not-allowed',
+            readOnly && 'pointer-events-none',
+          ])}
           as='label'
           htmlFor={`${name}_${value}`}
           variant='b2'

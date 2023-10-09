@@ -50,7 +50,9 @@ export default function SearchableSelectInput({
     control: (styles) => ({
       ...styles,
       // red-500 and gray-300
-      border: `1px solid ${error ? '#EF4444' : '#D1D5DB'}`,
+      border: `1px solid ${
+        error ? '#EF4444' : readOnly ? 'var(--color-primary-600)' : '#D1D5DB'
+      }`,
       '&:hover': {
         border: `1px solid ${error ? '#EF4444' : '#D1D5DB'}`,
       },
@@ -67,8 +69,9 @@ export default function SearchableSelectInput({
       },
       borderRadius: '0.25rem',
       padding: '0 0.75rem',
-      background: disabled || readOnly ? '#F3F4F6' : undefined,
+      background: disabled || readOnly ? 'none' : undefined,
       cursor: 'pointer',
+      color: readOnly ? '#FFFFFF' : undefined,
     }),
     valueContainer: (styles) => ({
       ...styles,
@@ -159,7 +162,8 @@ export default function SearchableSelectInput({
         className={clsx(
           'relative',
           withLabel && 'mt-1',
-          (disabled || readOnly) && 'cursor-not-allowed'
+          disabled && 'cursor-not-allowed',
+          readOnly && 'pointer-events-none'
         )}
       >
         <Controller
@@ -201,7 +205,10 @@ export default function SearchableSelectInput({
                 placeholder={placeholder}
                 options={options}
                 classNames={{
-                  control: () => '!min-h-[2.25rem] md:!min-h-[2.5rem]',
+                  control: () =>
+                    `!min-h-[2.25rem] md:!min-h-[2.5rem] ${
+                      readOnly && '[&>div>div]:!text-white'
+                    }`,
                 }}
                 styles={customStyles}
                 components={{
