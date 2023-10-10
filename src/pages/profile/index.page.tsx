@@ -1,4 +1,5 @@
 import { Switch } from '@headlessui/react';
+import clsx from 'clsx';
 import { Edit2 } from 'lucide-react';
 import * as React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -16,12 +17,21 @@ import DashboardLayout from '@/components/layout/dashboard/DashboardLayout';
 import Seo from '@/components/Seo';
 import Typography from '@/components/typography/Typography';
 
+import { BASE_URL } from '@/constant/env';
 import REGEX from '@/constant/regex';
 import UploadProfileModal from '@/pages/profile/component/ProfilePictureModal';
+import { useGetFileQuery } from '@/pages/profile/hooks/query';
 import { RegisterForm, RELIGION_OPTIONS } from '@/pages/register/index.page';
 
 export default function ProfilePage() {
   const [isEdit, setIsEdit] = React.useState<boolean>(false);
+
+  //#region  //*=========== Query ===========
+  const { data: profilePicture, isLoading: isProfilePictureLoading } =
+    useGetFileQuery('profile_picture');
+  const profilePictureData = profilePicture?.[profilePicture?.length - 1];
+  const profilePictureUrl = `${BASE_URL}/file/${profilePictureData?.id}`;
+  //#endregion  //*======== Query ===========
 
   //#region  //*=========== Form ===========
   const methods = useForm<RegisterForm>({
@@ -38,7 +48,6 @@ export default function ProfilePage() {
       username: 'johndoe',
       religion: 'islam',
       password_: 'Asdf123-',
-      profile_picture: '/images/logo.png',
     },
   });
   const {
@@ -48,7 +57,7 @@ export default function ProfilePage() {
   //#endregion  //*======== Form ===========
 
   //#region  //*=========== Form Submit ===========
-  const onSubmit = (data: unknown) => {
+  const onSubmit = (data: RegisterForm) => {
     logger({ data }, 'rhf.tsx line 33');
 
     return;
@@ -115,7 +124,14 @@ export default function ProfilePage() {
                             <button
                               type='button'
                               onClick={openModal}
-                              className='group h-60 w-60 overflow-hidden rounded-full border-2 border-primary-600 bg-[url(/images/logo.png)] bg-cover'
+                              className={clsx([
+                                'group h-60 w-60 overflow-hidden rounded-full border-2 border-primary-600 bg-cover bg-center bg-no-repeat',
+                              ])}
+                              style={{
+                                backgroundImage: isProfilePictureLoading
+                                  ? `url(/images/taobal.gif)`
+                                  : `url(${profilePictureUrl})`,
+                              }}
                             >
                               <div className='hidden h-full w-full items-center justify-center rounded-full bg-black/50 group-hover:flex'>
                                 <Edit2 size={50} className='w-full' />
