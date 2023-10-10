@@ -1,9 +1,21 @@
 import axios, { AxiosError } from 'axios';
+import { CookieValueTypes, getCookie } from 'cookies-next';
+import { GetServerSidePropsContext } from 'next';
+
+import { getToken } from '@/lib/cookie';
+
+import { JWT_TOKEN_KEY } from '@/constant/cookie';
+import { BASE_URL } from '@/constant/env';
 
 import { UninterceptedApiError } from '@/types/api';
 
+const isServer = () => {
+  return typeof window === 'undefined';
+};
+let context = <GetServerSidePropsContext>{};
+
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/v1',
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -11,8 +23,19 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(function (config) {
-  const token = localStorage.getItem('token');
   if (config.headers) {
+    let token: CookieValueTypes;
+
+    if (isServer()) {
+      if (!context)
+        throw 'Api Context not found. You must call `setApiContext(context)` before calling api on server-side';
+
+      /** Get cookies from context if server side */
+      getCookie(JWT_TOKEN_KEY, { req: context.req, res: context.res });
+    } else {
+      token = getToken();
+    }
+
     config.headers.Authorization = token ? `Bearer ${token}` : '';
   }
   return config;
@@ -42,5 +65,13 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+/**
+ * Must be set when calling api on server side
+ */
+export const setApiContext = (_context: GetServerSidePropsContext) => {
+  context = _context;
+  return;
+};
 
 export default api;
