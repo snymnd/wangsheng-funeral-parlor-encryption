@@ -20,6 +20,10 @@ type DropzoneInputProps = {
   validation?: Record<string, unknown>;
   title?: string;
   description?: string;
+  /**
+   * Max file size in bytes (default: 1MB)
+   */
+  maxSize?: number;
 };
 
 export default function DropzoneInput({
@@ -30,6 +34,7 @@ export default function DropzoneInput({
   maxFiles = 1,
   validation,
   readOnly,
+  maxSize = 1000000,
   hideError = false,
   title = 'Drag and drop your file here',
   description = 'Accepted file types: .pdf, .docx, .xlsx, .pptx',
@@ -136,7 +141,7 @@ export default function DropzoneInput({
     onDrop,
     accept,
     maxFiles,
-    maxSize: 1000000,
+    maxSize: maxSize,
   });
 
   return (
