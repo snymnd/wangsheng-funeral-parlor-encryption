@@ -4,7 +4,7 @@ import { AxiosError } from 'axios';
 import { File, FileType } from '@/types/entities/file';
 
 //#region  //*=========== get file by type ===========
-export function useGetFileQuery(
+export function useGetFileByTypeQuery(
   type: FileType,
   options?: UseQueryOptions<File[], AxiosError<AxiosError>>
 ) {

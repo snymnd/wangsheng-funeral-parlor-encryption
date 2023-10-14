@@ -15,8 +15,12 @@ export default function NextImageLightbox(props: NextImageLightboxProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <div className='cursor-zoom-in'>
-      <NextImage onClick={() => setIsOpen(true)} {...props} />
+    <>
+      <NextImage
+        className='cursor-zoom-in'
+        onClick={() => setIsOpen(true)}
+        {...props}
+      />
       {isOpen && (
         <Lightbox
           mainSrc={props.src}
@@ -24,6 +28,6 @@ export default function NextImageLightbox(props: NextImageLightboxProps) {
           onCloseRequest={() => setIsOpen(false)}
         />
       )}
-    </div>
+    </>
   );
 }

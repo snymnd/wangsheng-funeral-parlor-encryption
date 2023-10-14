@@ -1,12 +1,14 @@
 import { Switch } from '@headlessui/react';
 import clsx from 'clsx';
-import { Edit2 } from 'lucide-react';
+import { Edit2, HelpCircle } from 'lucide-react';
 import * as React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import logger from '@/lib/logger';
+import { useGetFileByTypeQuery } from '@/hooks/query/file';
 
 import Button from '@/components/buttons/Button';
+import IconButton from '@/components/buttons/IconButton';
 import DatePicker from '@/components/forms/DatePicker';
 import Input from '@/components/forms/Input';
 import PasswordInput from '@/components/forms/PasswordInput';
@@ -14,13 +16,18 @@ import Radio from '@/components/forms/Radio';
 import SearchableSelectInput from '@/components/forms/SearchableSelectInput';
 import TextArea from '@/components/forms/TextArea';
 import DashboardLayout from '@/components/layout/dashboard/DashboardLayout';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/popover/Popover';
 import Seo from '@/components/Seo';
 import Typography from '@/components/typography/Typography';
 
 import { BASE_URL } from '@/constant/env';
 import REGEX from '@/constant/regex';
+import UploadIdCardModal from '@/pages/profile/component/IdCardModal';
 import UploadProfileModal from '@/pages/profile/component/ProfilePictureModal';
-import { useGetFileQuery } from '@/pages/profile/hooks/query';
 import { RegisterForm, RELIGION_OPTIONS } from '@/pages/register/index.page';
 
 export default function ProfilePage() {
@@ -28,9 +35,14 @@ export default function ProfilePage() {
 
   //#region  //*=========== Query ===========
   const { data: profilePicture, isLoading: isProfilePictureLoading } =
-    useGetFileQuery('profile_picture');
+    useGetFileByTypeQuery('profile_picture');
   const profilePictureData = profilePicture?.[profilePicture?.length - 1];
   const profilePictureUrl = `${BASE_URL}/file/${profilePictureData?.id}`;
+
+  const { data: idCard, isLoading: isIdCardLoading } =
+    useGetFileByTypeQuery('id_card');
+  const idCardData = idCard?.[idCard?.length - 1];
+  const idCardUrl = `${BASE_URL}/file/${idCardData?.id}`;
   //#endregion  //*======== Query ===========
 
   //#region  //*=========== Form ===========
@@ -50,10 +62,7 @@ export default function ProfilePage() {
       password_: 'Asdf123-',
     },
   });
-  const {
-    handleSubmit,
-    formState: { isDirty },
-  } = methods;
+  const { handleSubmit, reset } = methods;
   //#endregion  //*======== Form ===========
 
   //#region  //*=========== Form Submit ===========
@@ -64,6 +73,13 @@ export default function ProfilePage() {
   };
   //#endregion  //*======== Form Submit ===========
 
+  const handleEditChange = () => {
+    if (isEdit) {
+      reset();
+    }
+    setIsEdit((prev) => !prev);
+  };
+
   return (
     <DashboardLayout>
       <Seo templateTitle='Profile' />
@@ -72,44 +88,54 @@ export default function ProfilePage() {
         <section className='py-10'>
           <div className='layout min-h-screen'>
             <div className='flex items-end justify-between'>
-              <div>
+              <div className='space-y-1'>
                 <Typography variant='h1'>Profile</Typography>
                 <Typography variant='c1' color='tertiary'>
                   See or update your profile
                 </Typography>
               </div>
-              {!isDirty && (
-                <div className='flex gap-x-2'>
-                  <Typography
-                    variant='b2'
-                    color={!isEdit ? 'secondary' : 'base'}
-                  >
-                    Edit Mode
-                  </Typography>
-                  <Switch
-                    checked={isEdit}
-                    onChange={setIsEdit}
+              <div className='flex items-center gap-x-2'>
+                {isEdit && (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <IconButton
+                        variant='ghost'
+                        size='sm'
+                        className='rounded-full text-amber-300'
+                        iconClassName='w-5 h-5'
+                        icon={HelpCircle}
+                      />
+                    </PopoverTrigger>
+                    <PopoverContent side='top'>
+                      Leaving edit mode will discard your changes.
+                    </PopoverContent>
+                  </Popover>
+                )}
+                <Typography variant='b2' color={!isEdit ? 'secondary' : 'base'}>
+                  Edit Mode
+                </Typography>
+                <Switch
+                  checked={isEdit}
+                  onChange={handleEditChange}
+                  className={`${
+                    !isEdit
+                      ? 'border border-primary-800 bg-transparent'
+                      : 'bg-primary-700'
+                  } relative inline-flex h-[28px] w-[54px] shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                >
+                  <span className='sr-only'>Use setting</span>
+                  <span
+                    aria-hidden='true'
                     className={`${
-                      !isEdit
-                        ? 'border border-primary-800 bg-transparent'
-                        : 'bg-primary-700'
-                    } relative inline-flex h-[28px] w-[54px] shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
-                  >
-                    <span className='sr-only'>Use setting</span>
-                    <span
-                      aria-hidden='true'
-                      className={`${
-                        isEdit
-                          ? 'translate-x-7 bg-white'
-                          : 'translate-x-0 bg-gray-300'
-                      }
-            pointer-events-none inline-block h-[24px] w-[24px] transform rounded-full shadow-lg ring-0 transition duration-200 ease-in-out`}
-                    />
-                  </Switch>
-                </div>
-              )}
+                      isEdit
+                        ? 'translate-x-7 bg-white'
+                        : 'translate-x-0 bg-gray-300'
+                    } pointer-events-none inline-block h-[24px] w-[24px] transform rounded-full shadow-lg ring-0 transition duration-200 ease-in-out`}
+                  />
+                </Switch>
+              </div>
             </div>
-            <hr className='my-2' />
+            <hr className='my-2 w-full' />
             <div>
               <FormProvider {...methods}>
                 <form
@@ -118,19 +144,20 @@ export default function ProfilePage() {
                 >
                   <div className='grid-cols-2 gap-x-6 space-y-3 md:grid md:space-y-0'>
                     <div className='space-y-3'>
-                      <div className='flex w-full justify-center'>
+                      <div className='flex w-full flex-col justify-center gap-3 md:justify-start lg:flex-row'>
                         <UploadProfileModal>
                           {({ openModal }) => (
                             <button
                               type='button'
                               onClick={openModal}
                               className={clsx([
-                                'group h-60 w-60 overflow-hidden rounded-full border-2 border-primary-600 bg-cover bg-center bg-no-repeat',
+                                'group m-auto h-52 w-52 flex-shrink-0 overflow-hidden rounded-full border-2 border-primary-600 bg-cover bg-center bg-no-repeat',
                               ])}
                               style={{
-                                backgroundImage: isProfilePictureLoading
-                                  ? `url(/images/taobal.gif)`
-                                  : `url(${profilePictureUrl})`,
+                                backgroundImage:
+                                  isProfilePictureLoading || !profilePictureData
+                                    ? `url(/images/taobal.gif)`
+                                    : `url(${profilePictureUrl})`,
                               }}
                             >
                               <div className='hidden h-full w-full items-center justify-center rounded-full bg-black/50 group-hover:flex'>
@@ -139,6 +166,27 @@ export default function ProfilePage() {
                             </button>
                           )}
                         </UploadProfileModal>
+                        <UploadIdCardModal>
+                          {({ openModal }) => (
+                            <button
+                              type='button'
+                              onClick={openModal}
+                              className={clsx([
+                                'group m-2 aspect-video w-full overflow-hidden rounded-lg border-2 border-primary-600 bg-cover bg-center bg-no-repeat',
+                              ])}
+                              style={{
+                                backgroundImage:
+                                  isIdCardLoading || !idCardData
+                                    ? `url(/images/tao-card.jpg)`
+                                    : `url(${idCardUrl})`,
+                              }}
+                            >
+                              <div className='hidden aspect-video h-full w-full items-center justify-center bg-black/50 group-hover:flex'>
+                                <Edit2 size={50} className='w-full' />
+                              </div>
+                            </button>
+                          )}
+                        </UploadIdCardModal>
                       </div>
 
                       <Input
@@ -306,11 +354,7 @@ export default function ProfilePage() {
                   </div>
                   {isEdit && (
                     <div className='flex w-full justify-end'>
-                      <Button
-                        className='mt-2 sm:w-fit'
-                        type='submit'
-                        disabled={!isDirty}
-                      >
+                      <Button className='mt-2 sm:w-fit' type='submit'>
                         Save
                       </Button>
                     </div>

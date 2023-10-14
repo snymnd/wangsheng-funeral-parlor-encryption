@@ -16,13 +16,13 @@ type UploadProfileModalProps = {
   openModal: () => void;
 };
 
-export default function UploadProfileModal({
+export default function UploadIdCardModal({
   children,
 }: {
   children: (props: UploadProfileModalProps) => JSX.Element;
 }) {
   const queryClient = useQueryClient();
-  const methods = useForm<{ profile_picture: FileWithPreview[] }>();
+  const methods = useForm<{ id_card: FileWithPreview[] }>();
   const { handleSubmit } = methods;
 
   const [open, setOpen] = React.useState(false);
@@ -38,19 +38,19 @@ export default function UploadProfileModal({
   //#endregion  //*======== Mutation ===========
 
   //#region  //*=========== Form Submit ===========
-  const onSubmit = (data: { profile_picture: FileWithPreview[] }) => {
+  const onSubmit = (data: { id_card: FileWithPreview[] }) => {
     logger({ data }, 'rhf.tsx line 33');
 
     const uploadPayload: UploadBody = {
-      type: 'profile_picture',
-      file: data.profile_picture[0],
+      type: 'id_card',
+      file: data.id_card[0],
     };
 
     const serializeData = serialize<UploadBody>(uploadPayload);
 
     uploadProfilePicture(serializeData).then(() => {
       queryClient.invalidateQueries({
-        queryKey: [`/files/profile_picture`],
+        queryKey: [`/files/id_card`],
       });
       setOpen(false);
     });
@@ -66,7 +66,7 @@ export default function UploadProfileModal({
           <form onSubmit={handleSubmit(onSubmit)}>
             <Modal.Section>
               <DropzoneInput
-                id='profile_picture'
+                id='id_card'
                 label={null}
                 description='Accepted file types: .png, .jpeg, .jpg'
                 accept={{
@@ -74,7 +74,7 @@ export default function UploadProfileModal({
                   'image/jpeg': ['.jpeg', '.jpg'],
                 }}
                 validation={{
-                  required: 'Profile picture is required',
+                  required: 'Id Card is required',
                 }}
                 maxSize={10000000}
               />

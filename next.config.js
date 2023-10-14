@@ -10,7 +10,7 @@ const nextConfig = {
 
   // Uncoment to add domain whitelist
   images: {
-    domains: ['188.166.179.200:8080'],
+    domains: ['188.166.179.200'],
   },
 
   async redirects() {
