@@ -36,7 +36,7 @@ export default function DropzoneInput({
   readOnly,
   maxSize = 1000000,
   hideError = false,
-  title = 'Drag and drop your file here',
+  title = 'Search or Drag and drop your file here',
   description = 'Accepted file types: .pdf, .docx, .xlsx, .pptx',
 }: DropzoneInputProps) {
   const {

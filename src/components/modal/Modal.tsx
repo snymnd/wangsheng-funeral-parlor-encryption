@@ -43,7 +43,7 @@ export function ModalRoot({
         initialFocus={containerRef}
       >
         <div
-          className='flex min-h-screen items-center justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0'
+          className='flex min-h-screen w-full items-center justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0'
           ref={containerRef}
         >
           <Transition.Child
@@ -76,7 +76,7 @@ export function ModalRoot({
           >
             <div
               className={clsxm(
-                'align inline-block transform rounded-2xl bg-base-1000 text-left shadow-xl transition-all sm:align-middle',
+                'align inline-block w-full transform rounded-2xl bg-base-1000 text-left shadow-xl transition-all sm:align-middle',
                 'sm:w-11/12 sm:max-w-xl',
                 modalContainerClassName
               )}

@@ -21,7 +21,7 @@ export const useUploadFileMutation = () => {
       });
     }),
     {
-      success: 'File/image Upload Success',
+      success: 'File Upload Success',
     }
   );
   return {
