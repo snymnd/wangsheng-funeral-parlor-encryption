@@ -1,20 +1,23 @@
 import { Switch } from '@headlessui/react';
+import { useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { Edit2, HelpCircle } from 'lucide-react';
+import { useRouter } from 'next/router';
 import * as React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 import logger from '@/lib/logger';
-import { useGetFileByTypeQuery } from '@/hooks/query/file';
+import { getFileQuery, useGetFileByTypeQuery } from '@/hooks/query/file';
 
 import Button from '@/components/buttons/Button';
 import IconButton from '@/components/buttons/IconButton';
 import DatePicker from '@/components/forms/DatePicker';
 import Input from '@/components/forms/Input';
-import PasswordInput from '@/components/forms/PasswordInput';
 import Radio from '@/components/forms/Radio';
 import SearchableSelectInput from '@/components/forms/SearchableSelectInput';
 import TextArea from '@/components/forms/TextArea';
+import withAuth from '@/components/hoc/withAuth';
 import DashboardLayout from '@/components/layout/dashboard/DashboardLayout';
 import {
   Popover,
@@ -24,42 +27,79 @@ import {
 import Seo from '@/components/Seo';
 import Typography from '@/components/typography/Typography';
 
-import { BASE_URL } from '@/constant/env';
+import useAuthStore from '@/store/useAuthStore';
+
 import REGEX from '@/constant/regex';
 import UploadIdCardModal from '@/pages/profile/component/IdCardModal';
 import UploadProfileModal from '@/pages/profile/component/ProfilePictureModal';
+import { useUpdateProfileMutation } from '@/pages/profile/hook/mutation';
 import { RegisterForm, RELIGION_OPTIONS } from '@/pages/register/index.page';
 
-export default function ProfilePage() {
+export default withAuth(ProfilePage, ['USER']);
+// export default
+function ProfilePage() {
+  const router = useRouter();
+  const user = useAuthStore.useUser();
+  const queryClient = useQueryClient();
   const [isEdit, setIsEdit] = React.useState<boolean>(false);
+  const [profileUrl, setProfileUrl] = React.useState<string | undefined>(
+    undefined
+  );
+  const [idCardUrl, setIdCardUrl] = React.useState<string | undefined>(
+    undefined
+  );
 
   //#region  //*=========== Query ===========
   const { data: profilePicture, isLoading: isProfilePictureLoading } =
     useGetFileByTypeQuery('profile_picture');
-  const profilePictureData = profilePicture?.[profilePicture?.length - 1];
-  const profilePictureUrl = `${BASE_URL}/file/${profilePictureData?.id}`;
+  const profilePictureData =
+    profilePicture?.data?.[profilePicture.data.length - 1];
 
   const { data: idCard, isLoading: isIdCardLoading } =
     useGetFileByTypeQuery('id_card');
-  const idCardData = idCard?.[idCard?.length - 1];
-  const idCardUrl = `${BASE_URL}/file/${idCardData?.id}`;
+  const idCardData = idCard?.data?.[idCard.data.length - 1];
+
+  React.useEffect(() => {
+    getFileQuery(profilePictureData?.id.toString())
+      .then((res) => {
+        setProfileUrl(res);
+      })
+      .catch(() => {
+        toast.error('failed to get profile picture', { id: 'profile-error' });
+      });
+  }, [profilePictureData]);
+
+  React.useEffect(() => {
+    getFileQuery(idCardData?.id.toString())
+      .then((res) => {
+        setIdCardUrl(res);
+      })
+      .catch(() => {
+        toast.error('failed to get id card', { id: 'id-card-error' });
+      });
+  }, [idCardData]);
+
   //#endregion  //*======== Query ===========
+
+  //#region  //*=========== Mutation ===========
+  const { mutateAsync: updateProfile, isLoading: isUpdateProfileLoading } =
+    useUpdateProfileMutation();
+
+  //#endregion  //*======== Mutation ===========
 
   //#region  //*=========== Form ===========
   const methods = useForm<RegisterForm>({
     mode: 'onChange',
     defaultValues: {
-      address: 'Keputih, Sukolilo, Surabaya, East Java 60117',
-      birth_place: 'Tevyat',
-      birth_date: '2012/2/29',
-      email: 'your@mail.com',
-      phone_number: '895612312312',
-      gender: 'male',
-      name: 'John Doe',
-      nationality: 'indonesia',
-      username: 'johndoe',
-      religion: 'islam',
-      password_: 'Asdf123-',
+      address: user?.address,
+      birth_place: user?.birth_info.split(',')[0],
+      birth_date: user?.birth_info.split(',')[1],
+      phone_number: user?.phone_number.slice(2, user.phone_number.length),
+      gender: user?.gender,
+      name: user?.name,
+      nationality: user?.nationality,
+      username: user?.username,
+      religion: user?.religion,
     },
   });
   const { handleSubmit, reset } = methods;
@@ -68,6 +108,23 @@ export default function ProfilePage() {
   //#region  //*=========== Form Submit ===========
   const onSubmit = (data: RegisterForm) => {
     logger({ data }, 'rhf.tsx line 33');
+    updateProfile({
+      name: data.name,
+      username: data.username,
+      address: data.address,
+      birth_info: `${data.birth_place}, ${data.birth_date}`,
+      gender: data.gender,
+      phone_number: `62${data.phone_number.toString()}`,
+      nationality: data.nationality,
+      religion: data.religion,
+    }).then(() => {
+      queryClient.invalidateQueries({
+        queryKey: [`/profile`],
+      });
+
+      setIsEdit(false);
+      router.reload();
+    });
 
     return;
   };
@@ -137,230 +194,223 @@ export default function ProfilePage() {
             </div>
             <hr className='my-2 w-full' />
             <div>
-              <FormProvider {...methods}>
-                <form
-                  onSubmit={handleSubmit(onSubmit)}
-                  className='mt-4 space-y-4'
-                >
-                  <div className='grid-cols-2 gap-x-6 space-y-3 md:grid md:space-y-0'>
-                    <div className='space-y-3'>
-                      <div className='flex w-full flex-col justify-center gap-3 md:justify-start lg:flex-row'>
-                        <UploadProfileModal>
-                          {({ openModal }) => (
-                            <button
-                              type='button'
-                              onClick={openModal}
-                              className={clsx([
-                                'group m-auto h-52 w-52 flex-shrink-0 overflow-hidden rounded-full border-2 border-primary-600 bg-cover bg-center bg-no-repeat',
-                              ])}
-                              style={{
-                                backgroundImage:
-                                  isProfilePictureLoading || !profilePictureData
-                                    ? `url(/images/taobal.gif)`
-                                    : `url(${profilePictureUrl})`,
-                              }}
-                            >
-                              <div className='hidden h-full w-full items-center justify-center rounded-full bg-black/50 group-hover:flex'>
-                                <Edit2 size={50} className='w-full' />
-                              </div>
-                            </button>
-                          )}
-                        </UploadProfileModal>
-                        <UploadIdCardModal>
-                          {({ openModal }) => (
-                            <button
-                              type='button'
-                              onClick={openModal}
-                              className={clsx([
-                                'group m-2 aspect-video w-full overflow-hidden rounded-lg border-2 border-primary-600 bg-cover bg-center bg-no-repeat',
-                              ])}
-                              style={{
-                                backgroundImage:
-                                  isIdCardLoading || !idCardData
-                                    ? `url(/images/tao-card.jpg)`
-                                    : `url(${idCardUrl})`,
-                              }}
-                            >
-                              <div className='hidden aspect-video h-full w-full items-center justify-center bg-black/50 group-hover:flex'>
-                                <Edit2 size={50} className='w-full' />
-                              </div>
-                            </button>
-                          )}
-                        </UploadIdCardModal>
-                      </div>
-
-                      <Input
-                        id='name'
-                        label='Name'
-                        validation={{ required: 'Name must be filled' }}
-                        placeholder='Enter your Name'
-                        readOnly={!isEdit}
-                      />
-                      <Input
-                        id='username'
-                        label='Username'
-                        validation={{ required: 'Username must be filled' }}
-                        placeholder='Enter your username'
-                        readOnly={!isEdit}
-                      />
-                      <Input
-                        id='email'
-                        label='Email'
-                        validation={{
-                          required: 'Email must be filled',
-                          pattern: {
-                            value: REGEX.EMAIL,
-                            message: 'Email must be valid',
-                          },
+              <div className='mt-4 space-y-4'>
+                <div className='flex w-full flex-col items-center justify-center gap-4 lg:flex-row'>
+                  <UploadProfileModal>
+                    {({ openModal }) => (
+                      <button
+                        type='button'
+                        onClick={openModal}
+                        className={clsx([
+                          'group h-52 w-52 flex-shrink-0 overflow-hidden rounded-full border-2 border-primary-600 bg-cover bg-center bg-no-repeat',
+                        ])}
+                        style={{
+                          backgroundImage:
+                            isProfilePictureLoading || !profilePictureData
+                              ? `url(/images/taobal.gif)`
+                              : `url(${profileUrl})`,
                         }}
-                        placeholder='Enter your email'
-                        readOnly={!isEdit}
-                      />
-                      <div className='space-y-1'>
-                        <Typography variant='s3' color='secondary'>
-                          I identify my gender as..
-                        </Typography>
-                        <Radio
-                          name='gender'
-                          label='Male'
-                          value='male'
-                          readOnly={!isEdit}
-                          // hideError on every radio except the last one, or use ErrorMessage
-                          hideError
-                        />
-                        <Radio
-                          name='gender'
-                          label='Female'
-                          value='female'
-                          readOnly={!isEdit}
-                          hideError
-                        />
-                      </div>
-                    </div>
-
-                    <div className='space-y-3'>
-                      <div className='flex flex-wrap gap-x-4 gap-y-2'>
+                      >
+                        <div className='hidden h-full w-full items-center justify-center rounded-full bg-black/50 group-hover:flex'>
+                          <Edit2 size={50} className='w-full' />
+                        </div>
+                      </button>
+                    )}
+                  </UploadProfileModal>
+                  <UploadIdCardModal>
+                    {({ openModal }) => (
+                      <button
+                        type='button'
+                        onClick={openModal}
+                        className={clsx([
+                          'group m-2 aspect-video w-full max-w-sm overflow-hidden rounded-lg border-2 border-primary-600 bg-cover bg-center bg-no-repeat',
+                        ])}
+                        style={{
+                          backgroundImage:
+                            isIdCardLoading || !idCardData
+                              ? `url(/images/tao-card.jpg)`
+                              : `url(${idCardUrl})`,
+                        }}
+                      >
+                        <div className='hidden aspect-video h-full w-full items-center justify-center bg-black/50 group-hover:flex'>
+                          <Edit2 size={50} className='w-full' />
+                        </div>
+                      </button>
+                    )}
+                  </UploadIdCardModal>
+                </div>
+                <FormProvider {...methods}>
+                  <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className='grid-cols-2 gap-x-6 space-y-3 md:grid md:space-y-0'>
+                      <div className='space-y-3'>
                         <Input
-                          id='birth_place'
-                          containerClassName='flex-1 min-w-[200px]'
-                          label='Place of Birth'
-                          validation={{
-                            required: 'Place of Birth must be filled',
-                          }}
-                          placeholder='Enter your place of birth'
+                          id='name'
+                          label='Name'
+                          validation={{ required: 'Name must be filled' }}
+                          placeholder='Enter your Name'
                           readOnly={!isEdit}
                         />
-                        <DatePicker
-                          id='birth_date'
-                          label='Date of Birth'
-                          containerClassName='flex-1 min-w-[200px]'
-                          maxDate={new Date()}
-                          validation={{
-                            required: 'Date of Birth must be filled',
-                          }}
-                          placeholder='dd/mm/yyyy'
+                        <Input
+                          id='username'
+                          label='Username'
+                          validation={{ required: 'Username must be filled' }}
+                          placeholder='Enter your username'
                           readOnly={!isEdit}
                         />
-                      </div>
-                      <SearchableSelectInput
-                        id='religion'
-                        placeholder='Chose your religion'
-                        label='Religion'
-                        validation={{ required: 'Religion must be filled' }}
-                        options={RELIGION_OPTIONS}
-                        readOnly={!isEdit}
-                      />
-                      <SearchableSelectInput
-                        id='nationality'
-                        label='Nationality'
-                        placeholder='Chose your nationality type'
-                        options={[
-                          { value: 'indonesia', label: 'Indonesia' },
-                          {
-                            value: 'outside',
-                            label: 'Outside of Indonesia',
-                          },
-                        ]}
-                        validation={{
-                          required: 'Nationality must be filled',
-                        }}
-                        readOnly={!isEdit}
-                      />
-                      <Input
-                        id='phone_number'
-                        label='Phone Number'
-                        validation={{
-                          required: 'Phone number must be filled',
-                          pattern: {
-                            value: REGEX.PHONE_NUMBER,
-                            message: 'Phone number must be valid',
-                          },
-                        }}
-                        placeholder={`Phone number start with '8'`}
-                        leftNode={
-                          <Typography
-                            variant='b2'
-                            color={isEdit ? 'tertiary' : 'secondary'}
-                          >
-                            +62 |
+
+                        <div className='space-y-1'>
+                          <Typography variant='s3' color='secondary'>
+                            I identify my gender as..
                           </Typography>
-                        }
-                        readOnly={!isEdit}
-                      />
-                      <TextArea
-                        id='address'
-                        label='Address'
-                        placeholder='Enter your address'
-                        validation={{ required: 'Address must be filled' }}
-                        readOnly={!isEdit}
-                      />
+                          <Radio
+                            name='gender'
+                            label='Male'
+                            value='male'
+                            readOnly={!isEdit}
+                            // hideError on every radio except the last one, or use ErrorMessage
+                            hideError
+                          />
+                          <Radio
+                            name='gender'
+                            label='Female'
+                            value='female'
+                            readOnly={!isEdit}
+                            hideError
+                          />
+                        </div>
+                        <div className='flex flex-wrap gap-x-4 gap-y-2'>
+                          <Input
+                            id='birth_place'
+                            containerClassName='flex-1 min-w-[200px]'
+                            label='Place of Birth'
+                            validation={{
+                              required: 'Place of Birth must be filled',
+                            }}
+                            placeholder='Enter your place of birth'
+                            readOnly={!isEdit}
+                          />
+                          <DatePicker
+                            id='birth_date'
+                            label='Date of Birth'
+                            containerClassName='flex-1 min-w-[200px]'
+                            maxDate={new Date()}
+                            validation={{
+                              required: 'Date of Birth must be filled',
+                            }}
+                            placeholder='dd/mm/yyyy'
+                            readOnly={!isEdit}
+                          />
+                        </div>
+                      </div>
 
-                      <hr />
-
-                      <PasswordInput
-                        id='password_'
-                        label='Password'
-                        autoComplete='new-password'
-                        validation={{
-                          required: 'Password must be filled',
-                          minLength: {
-                            value: 8,
-                            message: 'Password must be at least 8 characters',
-                          },
-                          pattern: {
-                            value: REGEX.PASSWORD,
-                            message:
-                              'Password must be combination of lowercase, uppercase, number, and special character(#?!@$%^&*-)',
-                          },
-                        }}
-                        placeholder='Enter your password'
-                        readOnly={!isEdit}
-                      />
-                      {isEdit && (
-                        <PasswordInput
-                          id='re_password'
-                          label='Confirm Password'
-                          validation={{
-                            required: 'Confirm Password must be filled',
-
-                            validate: (value) =>
-                              value === methods.getValues('password_') ||
-                              'Confirmation passwords do not match with password',
-                          }}
-                          placeholder='Re-enter your password'
+                      <div className='space-y-3'>
+                        <SearchableSelectInput
+                          id='religion'
+                          placeholder='Chose your religion'
+                          label='Religion'
+                          validation={{ required: 'Religion must be filled' }}
+                          options={RELIGION_OPTIONS}
+                          readOnly={!isEdit}
                         />
-                      )}
+                        <SearchableSelectInput
+                          id='nationality'
+                          label='Nationality'
+                          placeholder='Chose your nationality type'
+                          options={[
+                            { value: 'indonesia', label: 'Indonesia' },
+                            {
+                              value: 'outside',
+                              label: 'Outside of Indonesia',
+                            },
+                          ]}
+                          validation={{
+                            required: 'Nationality must be filled',
+                          }}
+                          readOnly={!isEdit}
+                        />
+                        <Input
+                          id='phone_number'
+                          label='Phone Number'
+                          validation={{
+                            required: 'Phone number must be filled',
+                            pattern: {
+                              value: REGEX.PHONE_NUMBER,
+                              message: 'Phone number must be valid',
+                            },
+                          }}
+                          placeholder={`Phone number start with '8'`}
+                          leftNode={
+                            <Typography
+                              variant='b2'
+                              color={isEdit ? 'tertiary' : 'secondary'}
+                            >
+                              +62 |
+                            </Typography>
+                          }
+                          readOnly={!isEdit}
+                        />
+                        <TextArea
+                          id='address'
+                          label='Address'
+                          placeholder='Enter your address'
+                          validation={{ required: 'Address must be filled' }}
+                          readOnly={!isEdit}
+                        />
+
+                        {/* <hr />
+                        {isEdit && (
+                          <>
+                            <Typography variant='s3'>
+                              Change Password
+                            </Typography>
+                            <PasswordInput
+                              id='password_'
+                              label='New Password'
+                              autoComplete='new-password'
+                              validation={{
+                                required: 'Password must be filled',
+                                minLength: {
+                                  value: 8,
+                                  message:
+                                    'Password must be at least 8 characters',
+                                },
+                                pattern: {
+                                  value: REGEX.PASSWORD,
+                                  message:
+                                    'Password must be combination of lowercase, uppercase, number, and special character(#?!@$%^&*-)',
+                                },
+                              }}
+                              placeholder='Enter your password'
+                            />
+                            <PasswordInput
+                              id='re_password'
+                              label='Confirm New Password'
+                              validation={{
+                                required: 'Confirm Password must be filled',
+                                validate: (value) =>
+                                  value === methods.getValues('password_') ||
+                                  'Confirmation passwords do not match with password',
+                              }}
+                              placeholder='Re-enter your password'
+                            />
+                          </>
+                        )} */}
+                      </div>
                     </div>
-                  </div>
-                  {isEdit && (
-                    <div className='flex w-full justify-end'>
-                      <Button className='mt-2 sm:w-fit' type='submit'>
-                        Save
-                      </Button>
-                    </div>
-                  )}
-                </form>
-              </FormProvider>
+                    {isEdit && (
+                      <div className='flex w-full justify-end'>
+                        <Button
+                          className='mt-2 sm:w-fit'
+                          type='submit'
+                          isLoading={isUpdateProfileLoading}
+                        >
+                          Save
+                        </Button>
+                      </div>
+                    )}
+                  </form>
+                </FormProvider>
+              </div>
             </div>
           </div>
         </section>

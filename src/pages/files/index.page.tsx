@@ -7,6 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { UploadBody, useUploadFileMutation } from '@/hooks/mutation/uploadFile';
 
 import Button from '@/components/buttons/Button';
+import withAuth from '@/components/hoc/withAuth';
 import DashboardLayout from '@/components/layout/dashboard/DashboardLayout';
 import Seo from '@/components/Seo';
 import Typography from '@/components/typography/Typography';
@@ -16,7 +17,8 @@ import FileContent from '@/pages/files/component/FileContent';
 import { FileWithPreview } from '@/types/dropzone';
 import { FileType } from '@/types/entities/file';
 
-export default function FilesPage() {
+export default withAuth(FilesPage, ['USER']);
+function FilesPage() {
   const queryClient = useQueryClient();
   const [activeType, setActiveType] = React.useState<FileType>('docs');
 

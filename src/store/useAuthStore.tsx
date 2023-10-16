@@ -5,13 +5,13 @@ import { create } from 'zustand';
 import { removeToken, setToken } from '@/lib/cookie';
 import logger from '@/lib/logger';
 
-import { User } from '@/types/entities/user';
+import { UserResponse } from '@/types/entities/user';
 
 type AuthStoreType = {
-  user: User | null;
+  user: UserResponse | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (user: User) => void;
+  login: (user: UserResponse) => void;
   logout: () => void;
   stopLoading: () => void;
 };

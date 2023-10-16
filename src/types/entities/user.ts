@@ -1,6 +1,6 @@
 export const Role = ['USER'] as const;
 
-export type User = {
+export type UserRegister = {
   name: string;
   username: string;
   gender: 'male' | 'female';
@@ -14,4 +14,18 @@ export type User = {
   token: string;
   role: (typeof Role)[number];
   profile_picture?: string;
+};
+
+export type UserResponse = {
+  username: string;
+  password: string;
+  name: string;
+  phone_number: string;
+  gender: 'male' | 'female';
+  religion: string;
+  nationality: 'indonesia' | 'outside';
+  address: string;
+  birth_info: string;
+  token: string;
+  role: (typeof Role)[number];
 };

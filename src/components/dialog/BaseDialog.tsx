@@ -175,7 +175,7 @@ export default function BaseDialog({
                 <Button
                   onClick={onSubmit}
                   className={clsx(
-                    'w-full items-center justify-center bg-primary-600 !font-semibold text-base-900 sm:ml-3 sm:w-auto sm:text-sm'
+                    'w-full items-center justify-center bg-primary-600 !font-semibold sm:ml-3 sm:w-auto sm:text-sm'
                   )}
                   isLoading={listenForLoadingToast && isLoading}
                 >

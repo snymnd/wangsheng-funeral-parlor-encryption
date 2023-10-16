@@ -4,8 +4,10 @@ import { FormProvider, useForm } from 'react-hook-form';
 import logger from '@/lib/logger';
 
 import Button from '@/components/buttons/Button';
+import DevelopmentCard from '@/components/cards/DevelopmentCard';
 import Input from '@/components/forms/Input';
 import PasswordInput from '@/components/forms/PasswordInput';
+import withAuth from '@/components/hoc/withAuth';
 import Layout from '@/components/layout/Layout';
 import ArrowLink from '@/components/links/ArrowLink';
 import NextImage from '@/components/NextImage';
@@ -13,13 +15,19 @@ import Seo from '@/components/Seo';
 import Typography from '@/components/typography/Typography';
 
 import REGEX from '@/constant/regex';
+import { useLoginMutation } from '@/pages/login/hook/mutation';
 
 type LoginForm = {
   username: string;
-  password: string;
+  password_: string;
 };
 
-export default function LoginPage() {
+export default withAuth(LoginPage, 'auth');
+function LoginPage() {
+  //#region  //*=========== Mutation ===========
+  const { mutateAsync: login, isLoading } = useLoginMutation();
+  //#endregion  //*======== Mutation ===========
+
   //#region  //*=========== Form ===========
   const methods = useForm<LoginForm>({
     mode: 'onChange',
@@ -31,9 +39,13 @@ export default function LoginPage() {
   //#endregion  //*======== Form ===========
 
   //#region  //*=========== Form Submit ===========
-  const onSubmit = (data: unknown) => {
+  const onSubmit = (data: LoginForm) => {
     logger({ data }, 'rhf.tsx line 33');
     // data.password => data.password_
+    login({
+      username: data.username,
+      password: data.password_,
+    });
 
     return;
   };
@@ -115,7 +127,13 @@ export default function LoginPage() {
                       />
 
                       <div className='space-y-2'>
-                        <Button className='mt-6 w-full'>Log In</Button>
+                        <Button
+                          className='mt-6 w-full'
+                          type='submit'
+                          isLoading={isLoading}
+                        >
+                          Log In
+                        </Button>
                         <div>
                           <Typography
                             variant='b3'
@@ -132,6 +150,17 @@ export default function LoginPage() {
                           </ArrowLink>
                         </div>
                       </div>
+                      <DevelopmentCard className='mt-4'>
+                        <Button
+                          onClick={() => {
+                            methods.setValue('username', 'onioni');
+                            methods.setValue('password_', 'Angka123-1');
+                          }}
+                          className='mt-2'
+                        >
+                          Populate with dummy data
+                        </Button>
+                      </DevelopmentCard>
                     </form>
                   </FormProvider>
                 </div>

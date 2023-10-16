@@ -10,17 +10,19 @@ import FullPageLoader from '@/components/FullPageLoader';
 import useAuthStore from '@/store/useAuthStore';
 
 import { ApiResponse } from '@/types/api';
-import { Role, User } from '@/types/entities/user';
+import { Role, UserRegister, UserResponse } from '@/types/entities/user';
 
 export interface WithAuthProps {
-  user: User;
+  user: UserRegister;
 }
 
 const HOME_ROUTE = '/';
 const LOGIN_ROUTE = '/login';
 
-const hasPermission = (user: User | null, role: Array<(typeof Role)[number]>) =>
-  user && role.includes(user.role);
+const hasPermission = (
+  user: UserResponse | null,
+  role: Array<(typeof Role)[number]>
+) => user && role.includes(user.role);
 
 /**
  * Add role-based access control to a component
@@ -54,7 +56,7 @@ export default function withAuth<T extends WithAuthProps = WithAuthProps>(
       }
       const loadUser = async () => {
         try {
-          const res = await api.get<ApiResponse<User>>('/me');
+          const res = await api.get<ApiResponse<UserResponse>>('/profile');
 
           login({
             ...res.data.data,

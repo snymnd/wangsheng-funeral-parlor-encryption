@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import * as React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -18,6 +19,7 @@ import Seo from '@/components/Seo';
 import Typography from '@/components/typography/Typography';
 
 import REGEX from '@/constant/regex';
+import { useRegisterMutation } from '@/pages/register/hook/mutation';
 
 export type RegisterForm = {
   name: string;
@@ -45,6 +47,13 @@ export const RELIGION_OPTIONS = [
 ];
 
 export default function RegisterPage() {
+  const router = useRouter();
+
+  //#region  //*=========== Mutation ===========
+  const { mutateAsync: register, isLoading: isRegisterLoading } =
+    useRegisterMutation();
+  //#endregion  //*======== Mutation ===========
+
   //#region  //*=========== Form ===========
   const methods = useForm<RegisterForm>({
     mode: 'onChange',
@@ -56,8 +65,21 @@ export default function RegisterPage() {
   //#endregion  //*======== Form ===========
 
   //#region  //*=========== Form Submit ===========
-  const onSubmit = (data: unknown) => {
-    logger({ data }, 'rhf.tsx line 33');
+  const onSubmit = (data: RegisterForm) => {
+    logger({ data }, 'rhf.tsx line 33 Register');
+    register({
+      name: data.name,
+      username: data.username,
+      password: data.password_,
+      address: data.address,
+      birth_info: `${data.birth_place}, ${data.birth_date}`,
+      gender: data.gender,
+      phone_number: `62${data.phone_number}`,
+      nationality: data.nationality,
+      religion: data.religion,
+    }).then(() => {
+      router.push('/login');
+    });
 
     return;
   };
@@ -125,18 +147,7 @@ export default function RegisterPage() {
                             validation={{ required: 'Username must be filled' }}
                             placeholder='Enter your username'
                           />
-                          <Input
-                            id='email'
-                            label='Email'
-                            validation={{
-                              required: 'Email must be filled',
-                              pattern: {
-                                value: REGEX.EMAIL,
-                                message: 'Email must be valid',
-                              },
-                            }}
-                            placeholder='Enter your email'
-                          />
+
                           <div className='flex flex-wrap gap-x-4 gap-y-2'>
                             <Input
                               id='birth_place'
@@ -157,7 +168,7 @@ export default function RegisterPage() {
                           </div>
 
                           <Input
-                            id='phone'
+                            id='phone_number'
                             label='Phone Number'
                             validation={{
                               required: 'Phone number must be filled',
@@ -270,7 +281,11 @@ export default function RegisterPage() {
                       </div>
 
                       <div className='flex w-full flex-col items-end space-y-2 sm:flex-row sm:justify-between'>
-                        <Button className='mt-2 w-full sm:w-fit' type='submit'>
+                        <Button
+                          className='mt-2 w-full sm:w-fit'
+                          type='submit'
+                          isLoading={isRegisterLoading}
+                        >
                           Register
                         </Button>
                         <div className='sm:order-first'>
