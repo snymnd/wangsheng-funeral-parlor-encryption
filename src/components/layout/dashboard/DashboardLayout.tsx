@@ -1,16 +1,18 @@
 import clsx from 'clsx';
-import { User } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { Folder } from 'lucide-react';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { IconType } from 'react-icons';
+
+import useDialog from '@/hooks/useDialog';
 
 import DashboardHeader from '@/components/layout/dashboard/DashboardHeader';
 import Layout from '@/components/layout/Layout';
 import UnstyledLink from '@/components/links/UnstyledLink';
 import Typography from '@/components/typography/Typography';
 
-import DefaultAvatar from '~/svg/DefaultAvatar.svg';
+import useAuthStore from '@/store/useAuthStore';
 
 type Navigation = {
   name: string;
@@ -42,8 +44,25 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isOpen, setIsOpen] = React.useState<boolean>(false);
+  const dialog = useDialog();
   const router = useRouter();
+  const user = useAuthStore.useUser();
+  const logout = useAuthStore.useLogout();
+  const [isOpen, setIsOpen] = React.useState<boolean>(false);
+
+  const handleLogout = () => {
+    dialog({
+      title: 'Logout',
+      content: 'You will bi loged out, are you sure?',
+      submitText: 'confirm',
+      closeText: 'cancel',
+      variant: 'warning',
+      listenForLoadingToast: true,
+    }).then(() => {
+      logout();
+      router.push('/login');
+    });
+  };
 
   return (
     <Layout>
@@ -62,7 +81,7 @@ export default function DashboardLayout({
             className={clsx([
               'flex-shrink-0 bg-base-900',
               'transition-all duration-200 ease-in-out',
-              'fixed mt-[3.5rem] h-screen -translate-x-20 sm:translate-x-0 lg:mt-[4.5rem]',
+              'fixed z-10 mt-[3.5rem] h-screen -translate-x-20 sm:translate-x-0 lg:mt-[4.5rem]',
               isOpen ? 'w-56 translate-x-0 sm:w-64' : 'w-16',
             ])}
           >
@@ -80,28 +99,28 @@ export default function DashboardLayout({
                     isOpen ? 'opacity-100' : 'h-0 opacity-0',
                   ])}
                 >
-                  <DefaultAvatar className='h-28 w-28 text-neutral-white sm:h-36 sm:w-36' />
+                  {/* <DefaultAvatar className='h-28 w-28 text-neutral-white sm:h-36 sm:w-36' /> */}
                   <div className={clsx([isOpen ? 'block' : 'hidden'])}>
                     <div className='text-center'>
                       <Typography variant='s2' className='mt-2'>
-                        Kim Dahyuns
+                        {user?.name}
                       </Typography>
                       <Typography variant='b2' color='secondary'>
-                        @dubuuu
+                        @{user?.username}
                       </Typography>
                     </div>
                   </div>
                 </div>
                 {/* Meta info */}
                 <div className='group flex flex-col'>
-                  <div
+                  {/* <div
                     className={clsx(
                       'flex w-16 items-center py-3 pl-4 text-xs font-medium',
                       isOpen ? 'hidden' : 'inline'
                     )}
                   >
                     <DefaultAvatar className='ml-[2px] h-7 w-7 text-neutral-white' />
-                  </div>
+                  </div> */}
 
                   {dashboardNavigation.map((nav) => {
                     const isActive = nav.exactMatch
@@ -144,6 +163,34 @@ export default function DashboardLayout({
                       </UnstyledLink>
                     );
                   })}
+                  <button
+                    onClick={handleLogout}
+                    type='button'
+                    className={clsx(
+                      'hover:bg-base-800',
+                      'group flex items-center py-3 text-xs font-medium',
+                      isOpen ? 'pl-8' : 'w-16 justify-center p-4'
+                    )}
+                  >
+                    <LogOut
+                      className={clsx(
+                        'fill h-5 w-6 flex-shrink-0 text-xs',
+                        'fill-red-500 text-red-400',
+                        isOpen ? 'mr-2' : 'mr-0'
+                      )}
+                      aria-hidden='true'
+                    />
+                    <span
+                      className={clsx([
+                        'b2 truncate',
+                        'fill-white text-white',
+                        !isOpen ? 'hidden' : 'inline',
+                      ])}
+                      title='Logout'
+                    >
+                      Logout
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>

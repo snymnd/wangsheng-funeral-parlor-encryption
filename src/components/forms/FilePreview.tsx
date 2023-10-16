@@ -1,7 +1,7 @@
 import clsx from 'clsx';
+import { DownloadIcon } from 'lucide-react';
 import * as React from 'react';
 import {
-  HiOutlineExternalLink,
   HiOutlineEye,
   HiOutlinePaperClip,
   HiOutlinePhotograph,
@@ -121,9 +121,10 @@ export default function FilePreview({
       <div className='ml-4 flex flex-shrink-0 items-center space-x-2'>
         <UnstyledLink
           href={file.preview}
-          className='rounded text-gray-500 hover:text-gray-700 focus:outline-none focus:ring focus:ring-primary-600'
+          download={file.name}
+          className='cursor-pointer rounded text-gray-500 hover:text-gray-700 focus:outline-none focus:ring focus:ring-primary-600'
         >
-          <HiOutlineExternalLink size={20} />
+          <DownloadIcon size={20} />
         </UnstyledLink>
         {!readOnly && (
           <button
