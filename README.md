@@ -18,6 +18,7 @@ favicon generator:
 -->
 
 ### How To Run
+
 - Clone the repository.
 - Make sure you have already installed NodeJs.
 - run `yarn install`, if you haven't installed yarn, you can install that before.
