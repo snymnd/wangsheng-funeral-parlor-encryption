@@ -9,10 +9,17 @@ Expansions used:
 
 ## Attribution
 
-Design is mostly inspired by [Aether Design System](https://aether.thcl.dev/), adjusted as needs.
+Design is mostly inspired by [Aether Design System](https://aether.thcl.dev/), adjusted as needed.
 
 <!-- STARTERCONF
 favicon generator:
 - https://www.favicon-generator.org/
 - https://favicon.io/favicon-converter/
 -->
+
+### How To Run
+- Clone the repository.
+- Make sure you have already installed NodeJs.
+- run `yarn install`, if you haven't installed yarn, you can install that before.
+- run `yarn dev`
+- open `localhost:3000`
