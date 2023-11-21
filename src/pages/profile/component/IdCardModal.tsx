@@ -10,6 +10,8 @@ import Button from '@/components/buttons/Button';
 import DropzoneInput from '@/components/forms/DropzoneInput';
 import Modal from '@/components/modal/Modal';
 
+import useAuthStore from '@/store/useAuthStore';
+
 import { FileWithPreview } from '@/types/dropzone';
 
 type UploadProfileModalProps = {
@@ -21,6 +23,7 @@ export default function UploadIdCardModal({
 }: {
   children: (props: UploadProfileModalProps) => JSX.Element;
 }) {
+  const user = useAuthStore.useUser();
   const queryClient = useQueryClient();
   const methods = useForm<{ id_card: FileWithPreview[] }>();
   const { handleSubmit } = methods;
@@ -50,7 +53,7 @@ export default function UploadIdCardModal({
 
     uploadProfilePicture(serializeData).then(() => {
       queryClient.invalidateQueries({
-        queryKey: [`/files/id_card`],
+        queryKey: [`/files/${user?.username}?type=id_card`],
       });
       setOpen(false);
     });

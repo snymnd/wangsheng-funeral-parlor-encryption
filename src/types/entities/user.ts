@@ -20,6 +20,7 @@ export type UserResponse = {
   username: string;
   password: string;
   name: string;
+  email: string;
   phone_number: string;
   gender: 'male' | 'female';
   religion: string;

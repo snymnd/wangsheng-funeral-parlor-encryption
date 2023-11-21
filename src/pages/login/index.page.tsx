@@ -153,8 +153,8 @@ function LoginPage() {
                       <DevelopmentCard className='mt-4'>
                         <Button
                           onClick={() => {
-                            methods.setValue('username', 'onioni');
-                            methods.setValue('password_', 'Angka123-1');
+                            methods.setValue('username', 'yunusan');
+                            methods.setValue('password_', 'Angka123-');
                           }}
                           className='mt-2'
                         >

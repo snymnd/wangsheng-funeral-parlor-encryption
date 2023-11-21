@@ -8,11 +8,12 @@ import { File as FileEntities, FileType } from '@/types/entities/file';
 
 //#region  //*=========== get file by type ===========
 export function useGetFileByTypeQuery(
+  username: string | undefined,
   type: FileType,
   options?: UseQueryOptions<ApiResponse<FileEntities[]>, AxiosError<AxiosError>>
 ) {
   const results = useQuery<ApiResponse<FileEntities[]>, AxiosError<AxiosError>>(
-    [`/files/${type}`],
+    [`/files/${username}?type=${type}`],
     options
   );
   return results;

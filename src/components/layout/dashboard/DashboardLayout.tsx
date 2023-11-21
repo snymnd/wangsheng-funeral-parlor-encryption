@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { LogOut, User } from 'lucide-react';
+import { Bell, Lock, LogOut, User } from 'lucide-react';
 import { Folder } from 'lucide-react';
 import { useRouter } from 'next/router';
 import * as React from 'react';
@@ -25,20 +25,6 @@ type Navigation = {
   exactMatch?: boolean;
 };
 
-const dashboardNavigation: Navigation[] = [
-  {
-    name: 'Profile',
-    href: '/profile',
-    icon: User,
-    exactMatch: true,
-  },
-  {
-    name: 'My Files',
-    href: '/files',
-    icon: Folder,
-  },
-];
-
 export default function DashboardLayout({
   children,
 }: {
@@ -49,6 +35,30 @@ export default function DashboardLayout({
   const user = useAuthStore.useUser();
   const logout = useAuthStore.useLogout();
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
+
+  const dashboardNavigation: Navigation[] = [
+    {
+      name: 'Profile',
+      href: `/profile`,
+      icon: User,
+      exactMatch: true,
+    },
+    {
+      name: 'My Files',
+      href: '/files',
+      icon: Folder,
+    },
+    {
+      name: 'Access List',
+      href: '/access-list',
+      icon: Lock,
+    },
+    {
+      name: 'Notification',
+      href: '/notification',
+      icon: Bell,
+    },
+  ];
 
   const handleLogout = () => {
     dialog({

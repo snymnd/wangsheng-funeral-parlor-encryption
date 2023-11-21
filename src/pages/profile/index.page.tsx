@@ -51,12 +51,14 @@ function ProfilePage() {
 
   //#region  //*=========== Query ===========
   const { data: profilePicture, isLoading: isProfilePictureLoading } =
-    useGetFileByTypeQuery('profile_picture');
+    useGetFileByTypeQuery(user?.username, 'profile_picture');
   const profilePictureData =
     profilePicture?.data?.[profilePicture.data.length - 1];
 
-  const { data: idCard, isLoading: isIdCardLoading } =
-    useGetFileByTypeQuery('id_card');
+  const { data: idCard, isLoading: isIdCardLoading } = useGetFileByTypeQuery(
+    user?.username,
+    'id_card'
+  );
   const idCardData = idCard?.data?.[idCard.data.length - 1];
 
   React.useEffect(() => {
@@ -97,6 +99,7 @@ function ProfilePage() {
       phone_number: user?.phone_number.slice(2, user.phone_number.length),
       gender: user?.gender,
       name: user?.name,
+      email: user?.email,
       nationality: user?.nationality,
       username: user?.username,
       religion: user?.religion,
@@ -255,6 +258,13 @@ function ProfilePage() {
                           label='Username'
                           validation={{ required: 'Username must be filled' }}
                           placeholder='Enter your username'
+                          readOnly={!isEdit}
+                        />
+                        <Input
+                          id='email'
+                          label='Email'
+                          validation={{ required: 'Email must be filled' }}
+                          placeholder='Enter your email'
                           readOnly={!isEdit}
                         />
 

@@ -68,15 +68,10 @@ export default function RegisterPage() {
   const onSubmit = (data: RegisterForm) => {
     logger({ data }, 'rhf.tsx line 33 Register');
     register({
-      name: data.name,
-      username: data.username,
+      ...data,
       password: data.password_,
-      address: data.address,
       birth_info: `${data.birth_place}, ${data.birth_date}`,
-      gender: data.gender,
       phone_number: `62${data.phone_number}`,
-      nationality: data.nationality,
-      religion: data.religion,
     }).then(() => {
       router.push('/login');
     });
@@ -144,8 +139,26 @@ export default function RegisterPage() {
                           <Input
                             id='username'
                             label='Username'
-                            validation={{ required: 'Username must be filled' }}
+                            validation={{
+                              required: 'Username must be filled',
+                              pattern: {
+                                value: REGEX.USERNAME,
+                                message: 'Username must be valid',
+                              },
+                            }}
                             placeholder='Enter your username'
+                          />
+                          <Input
+                            id='email'
+                            label='Email'
+                            validation={{
+                              required: 'Email must be filled',
+                              pattern: {
+                                value: REGEX.EMAIL,
+                                message: 'Email must be valid',
+                              },
+                            }}
+                            placeholder='Enter your email'
                           />
 
                           <div className='flex flex-wrap gap-x-4 gap-y-2'>
