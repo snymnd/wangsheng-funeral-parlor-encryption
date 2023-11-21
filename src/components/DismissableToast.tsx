@@ -38,7 +38,8 @@ export default function DismissableToast() {
         reverseOrder={false}
         position='top-center'
         toastOptions={{
-          className: 'font-medium !rounded-md',
+          className:
+            'font-medium !rounded-md !bg-base-800 !text-neutral-surface',
         }}
       >
         {(t) => (

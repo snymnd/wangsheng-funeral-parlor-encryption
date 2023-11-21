@@ -13,6 +13,7 @@ export type TextAreaProps = {
   hideError?: boolean;
   validation?: RegisterOptions;
   containerClassName?: string;
+  className?: string;
 } & React.ComponentPropsWithoutRef<'textarea'>;
 
 export default function TextArea({
@@ -25,6 +26,7 @@ export default function TextArea({
   validation,
   disabled,
   containerClassName,
+  className,
   ...rest
 }: TextAreaProps) {
   const {
@@ -57,6 +59,7 @@ export default function TextArea({
           readOnly={readOnly}
           disabled={disabled}
           className={clsx(
+            className,
             'block w-full rounded text-base-1000 shadow-sm',
             'border-gray-300 focus:border-primary-600 focus:ring-primary-600',
             'plcaeholder:text-neutral-secondary',

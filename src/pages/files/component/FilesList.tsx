@@ -9,21 +9,24 @@ import { getFileQuery, useGetFileByTypeQuery } from '@/hooks/query/file';
 
 import DropzoneInput from '@/components/forms/DropzoneInput';
 import FullPageLoader from '@/components/FullPageLoader';
+import Typography from '@/components/typography/Typography';
 
 import { File, FileType } from '@/types/entities/file';
 
 type FilesListProps = {
   fileType: FileType;
+  username: string | undefined;
 } & React.ComponentPropsWithoutRef<'div'>;
 
 export default function FilesList({
   fileType,
+  username,
   className,
   ...rest
 }: FilesListProps) {
   //#region  //*=========== Query ===========
   const { data: fileList, isLoading: isFileListLoading } =
-    useGetFileByTypeQuery(fileType);
+    useGetFileByTypeQuery(username, fileType);
   const fileListData = fileList?.data;
   //#endregion  //*======== Query ===========
 
@@ -31,12 +34,16 @@ export default function FilesList({
 
   return (
     <div
-      className={clsxm('grid grid-cols-2 gap-3 sm:grid-cols-4', className)}
+      className={clsxm('mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4', className)}
       {...rest}
     >
-      {fileListData?.map((file) => (
-        <FilePreview file={file} key={file.id} />
-      ))}
+      {fileListData && fileListData.length > 0 ? (
+        fileListData?.map((file) => <FilePreview file={file} key={file.id} />)
+      ) : (
+        <Typography variant='h4' color='tertiary'>
+          No {fileType} found for now.
+        </Typography>
+      )}
     </div>
   );
 }

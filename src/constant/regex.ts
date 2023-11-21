@@ -1,4 +1,5 @@
 const REGEX = {
+  USERNAME: /^[a-zA-Z0-9_]+$/,
   NUMBER: /^\d+$/,
   NUMBER_AND_DECIMAL: /^\d+(\.\d+)?$/,
   PHONE_NUMBER: /^8[0-9][0-9]{7,11}$/,

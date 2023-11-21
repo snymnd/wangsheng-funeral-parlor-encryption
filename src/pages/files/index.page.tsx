@@ -12,14 +12,18 @@ import DashboardLayout from '@/components/layout/dashboard/DashboardLayout';
 import Seo from '@/components/Seo';
 import Typography from '@/components/typography/Typography';
 
+import useAuthStore from '@/store/useAuthStore';
+
 import FileContent from '@/pages/files/component/FileContent';
 
 import { FileWithPreview } from '@/types/dropzone';
 import { FileType } from '@/types/entities/file';
 
 export default withAuth(FilesPage, ['USER']);
+// export default
 function FilesPage() {
   const queryClient = useQueryClient();
+  const user = useAuthStore.useUser();
   const [activeType, setActiveType] = React.useState<FileType>('docs');
 
   const methods = useForm<{ file: FileWithPreview[]; type: FileType }>();
@@ -41,7 +45,7 @@ function FilesPage() {
 
     uploadFile(serializeData).then(() => {
       queryClient.invalidateQueries({
-        queryKey: [`/files/${activeType}`],
+        queryKey: [`/files/${user?.username}?type=${activeType}`],
       });
       reset();
     });
@@ -90,18 +94,21 @@ function FilesPage() {
                 <form onSubmit={handleSubmit(onSubmit)} className='space-y-2'>
                   {activeType === 'docs' && (
                     <FileContent
+                      username={user?.username}
                       file={fileCategory[0]}
                       isUploadLoading={isUploadFileLoading}
                     />
                   )}
                   {activeType === 'video' && (
                     <FileContent
+                      username={user?.username}
                       file={fileCategory[1]}
                       isUploadLoading={isUploadFileLoading}
                     />
                   )}
                   {activeType === 'misc' && (
                     <FileContent
+                      username={user?.username}
                       file={fileCategory[2]}
                       isUploadLoading={isUploadFileLoading}
                     />
@@ -125,7 +132,7 @@ export type FileCategory = {
   };
 };
 
-const fileCategory: FileCategory[] = [
+export const fileCategory: FileCategory[] = [
   {
     name: 'Documents',
     value: 'document',
