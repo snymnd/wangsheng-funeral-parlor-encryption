@@ -20,6 +20,8 @@ type DropzoneInputProps = {
   validation?: Record<string, unknown>;
   title?: string;
   description?: string;
+  className?: string;
+  containerClassName?: string;
   /**
    * Max file size in bytes (default: 1MB)
    */
@@ -36,6 +38,8 @@ export default function DropzoneInput({
   readOnly,
   maxSize = 1000000,
   hideError = false,
+  className,
+  containerClassName,
   title = 'Search or Drag and drop your file here',
   description = 'Accepted file types: .pdf, .docx, .xlsx, .pptx',
 }: DropzoneInputProps) {
@@ -145,7 +149,7 @@ export default function DropzoneInput({
   });
 
   return (
-    <div>
+    <div className={className}>
       {withLabel && (
         <Typography as='label' variant='s3' className='block' htmlFor={id}>
           {label}
@@ -190,13 +194,14 @@ export default function DropzoneInput({
                 <input {...field} {...getInputProps()} />
                 <div
                   className={clsx(
-                    'w-full cursor-pointer rounded-lg px-2 py-8',
+                    'flex w-full cursor-pointer justify-center rounded-lg px-2 py-8',
+                    containerClassName,
                     error
                       ? 'dropzone-border-dash-error border-red-500 group-focus:border-red-500'
                       : 'dropzone-border-dash group-focus:border-primary-600'
                   )}
                 >
-                  <div className='space-y-1 text-center'>
+                  <div className='flex flex-col justify-center space-y-1 text-center'>
                     <svg
                       width='120'
                       height='120'

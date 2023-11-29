@@ -4,6 +4,7 @@ import { Folder } from 'lucide-react';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { IconType } from 'react-icons';
+import { BsFillFileEarmarkCheckFill } from 'react-icons/bs';
 
 import useDialog from '@/hooks/useDialog';
 
@@ -57,6 +58,11 @@ export default function DashboardLayout({
       name: 'Notification',
       href: '/notification',
       icon: Bell,
+    },
+    {
+      name: 'Verify Signature',
+      href: '/verify-signature',
+      icon: BsFillFileEarmarkCheckFill,
     },
   ];
 
