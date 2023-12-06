@@ -24,14 +24,14 @@ export const useRequestAccessMutation = () => {
   };
 };
 
-type InsertKeyBody = {
+export type InsertKeyProfileBody = {
   username: string;
   key: string;
 };
-export const useInsertKeyMutation = () => {
+export const useInsertKeyProfileMutation = () => {
   const result = useMutationToast<
     ApiResponse<ApiResponse<UserResponse>>,
-    InsertKeyBody
+    InsertKeyProfileBody
   >(
     useMutation((data) => {
       return api.post(`/profile/${data.username}`, { key: data.key });

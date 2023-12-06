@@ -8,8 +8,9 @@ const fileType = [
 export type FileType = (typeof fileType)[number];
 
 export type File = {
-  id: number;
+  id: string;
   user_id: number;
   filename: string;
   type: FileType;
+  is_signed: boolean;
 };

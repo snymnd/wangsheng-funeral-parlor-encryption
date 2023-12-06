@@ -10,14 +10,14 @@ import FilesList from '@/pages/files/component/FilesList';
 import { FileCategory } from '@/pages/files/index.page';
 
 type FileContentProps = {
-  file: FileCategory;
+  fileCategory: FileCategory;
   readonly?: boolean;
   username: string | undefined;
   isUploadLoading?: boolean;
 } & React.ComponentPropsWithoutRef<'div'>;
 
 export default function FileContent({
-  file,
+  fileCategory,
   isUploadLoading = false,
   className,
   username,
@@ -30,10 +30,10 @@ export default function FileContent({
         <>
           <DropzoneInput
             id='file'
-            title={`Search or drag & drop your ${file.value} here`}
-            label={'Add ' + file.value}
+            title={`Search or drag & drop your ${fileCategory.value} here`}
+            label={'Add ' + fileCategory.value}
             description=''
-            accept={file.format}
+            accept={fileCategory.format}
             validation={{
               required: 'Profile picture is required',
             }}
@@ -41,15 +41,20 @@ export default function FileContent({
           />
           <div className='mt-2 flex justify-end gap-2'>
             <Button type='submit' isLoading={isUploadLoading}>
-              Upload {file.value}
+              Upload {fileCategory.value}
             </Button>
           </div>
           <hr className='my-4 border-base-600' />
         </>
       )}
 
-      <Typography variant='h3'>List of {file.name}</Typography>
-      <FilesList username={username} fileType={file.type} className='mt-2' />
+      <Typography variant='h3'>List of {fileCategory.name}</Typography>
+      <FilesList
+        needRequest={readonly}
+        username={username}
+        fileType={fileCategory.type}
+        className='mt-2'
+      />
     </div>
   );
 }

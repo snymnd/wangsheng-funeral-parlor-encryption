@@ -16,7 +16,7 @@ export default withAuth(AccessListPage, ['USER']);
 function AccessListPage() {
   //#region  //*=========== Query ===========
   const { data: notification, isLoading: notificationLoading } =
-    useGetNotificationQuery('dir=0');
+    useGetNotificationQuery('profile', 'dir=0');
   const notifiactionData = notification?.data;
   //#endregion  //*======== Query ===========
 

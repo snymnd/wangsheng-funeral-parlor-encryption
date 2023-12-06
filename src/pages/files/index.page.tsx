@@ -41,9 +41,9 @@ function FilesPage() {
       file: data.file[0],
     };
 
-    const serializeData = serialize<UploadBody>(uploadPayload);
+    const serializedData = serialize<UploadBody>(uploadPayload);
 
-    uploadFile(serializeData).then(() => {
+    uploadFile(serializedData).then(() => {
       queryClient.invalidateQueries({
         queryKey: [`/files/${user?.username}?type=${activeType}`],
       });
@@ -95,21 +95,21 @@ function FilesPage() {
                   {activeType === 'docs' && (
                     <FileContent
                       username={user?.username}
-                      file={fileCategory[0]}
+                      fileCategory={fileCategory[0]}
                       isUploadLoading={isUploadFileLoading}
                     />
                   )}
                   {activeType === 'video' && (
                     <FileContent
                       username={user?.username}
-                      file={fileCategory[1]}
+                      fileCategory={fileCategory[1]}
                       isUploadLoading={isUploadFileLoading}
                     />
                   )}
                   {activeType === 'misc' && (
                     <FileContent
                       username={user?.username}
-                      file={fileCategory[2]}
+                      fileCategory={fileCategory[2]}
                       isUploadLoading={isUploadFileLoading}
                     />
                   )}

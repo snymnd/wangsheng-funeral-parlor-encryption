@@ -5,4 +5,5 @@ export type RequestAccess = {
   target_user_id: string;
   target_user: { username: string };
   status: 0 | 1 | 2;
+  file_id: string;
 };

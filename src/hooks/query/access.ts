@@ -9,11 +9,12 @@ import { RequestAccess } from '@/types/entities/access';
 type NotificationResponse = ApiResponse<RequestAccess[]>;
 
 export function useGetNotificationQuery(
+  type: 'profile' | 'file',
   filter: string,
   options?: UseQueryOptions<NotificationResponse, AxiosError<AxiosError>>
 ) {
   const results = useQuery<NotificationResponse, AxiosError<AxiosError>>(
-    [`/request/list?${filter}`],
+    [`/request/${type}/list?${filter}`],
     options
   );
   return results;

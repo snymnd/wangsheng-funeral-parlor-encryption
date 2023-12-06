@@ -5,12 +5,13 @@ import useMutationToast from '@/hooks/toast/useMutationToast';
 
 type RequestAccessBody = {
   notificationId: string;
+  type: 'profile' | 'file';
   permission_status: number;
 };
 export const useResponseAccessMutation = () => {
   const result = useMutationToast<unknown, RequestAccessBody>(
     useMutation((data) => {
-      return api.post(`/request/action/${data.notificationId}`, {
+      return api.post(`/request/action/${data.type}/${data.notificationId}`, {
         permission_status: data.permission_status,
       });
     }),

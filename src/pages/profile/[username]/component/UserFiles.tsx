@@ -41,21 +41,21 @@ export default function UserFiles({ className, ...rest }: UserFilesProps) {
           <FileContent
             username={username as string}
             readonly
-            file={fileCategory[0]}
+            fileCategory={fileCategory[0]}
           />
         )}
         {activeType === 'video' && (
           <FileContent
             username={username as string}
             readonly
-            file={fileCategory[1]}
+            fileCategory={fileCategory[1]}
           />
         )}
         {activeType === 'misc' && (
           <FileContent
             username={username as string}
             readonly
-            file={fileCategory[2]}
+            fileCategory={fileCategory[2]}
           />
         )}
       </div>

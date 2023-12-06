@@ -12,9 +12,21 @@ import NotificationListItem from '@/pages/notification/component/NotificationLis
 export default withAuth(NotificationPage, ['USER']);
 function NotificationPage() {
   //#region  //*=========== query ===========
-  const { data: notification } = useGetNotificationQuery('dir=1&status=0');
-  const notifiactionData = notification?.data;
+  const { data: notificationProfile } = useGetNotificationQuery(
+    'profile',
+    'dir=1&status=0'
+  );
+  const notifiactionProfileData = notificationProfile?.data;
+  const { data: notificationFile } = useGetNotificationQuery(
+    'file',
+    'dir=1&status=0'
+  );
+  const notifiactionFileData = notificationFile?.data;
   //#endregion  //*======== query ===========
+
+  const notificationExist =
+    (notifiactionProfileData && notifiactionProfileData.length > 0) ||
+    (notifiactionFileData && notifiactionFileData.length > 0);
 
   return (
     <DashboardLayout>
@@ -35,10 +47,28 @@ function NotificationPage() {
             <div className='mt-8'>
               <hr className='my-4 border-base-600' />
               <div className='space-y-3'>
-                {notifiactionData && notifiactionData.length > 0 ? (
-                  notifiactionData.map((request) => (
-                    <NotificationListItem request={request} key={request.id} />
-                  ))
+                {notificationExist ? (
+                  <>
+                    {notifiactionProfileData &&
+                      notifiactionProfileData.length > 0 &&
+                      notifiactionProfileData.map((request) => (
+                        <NotificationListItem
+                          request={request}
+                          key={request.id}
+                          type='profile'
+                        />
+                      ))}
+
+                    {notifiactionFileData &&
+                      notifiactionFileData.length > 0 &&
+                      notifiactionFileData.map((request) => (
+                        <NotificationListItem
+                          request={request}
+                          key={request.id}
+                          type='file'
+                        />
+                      ))}
+                  </>
                 ) : (
                   <Typography variant='b1' color='tertiary'>
                     No notification found for Now

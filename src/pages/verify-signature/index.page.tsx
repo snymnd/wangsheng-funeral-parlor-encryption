@@ -1,3 +1,4 @@
+import { serialize } from 'object-to-formdata';
 import * as React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -9,15 +10,37 @@ import DashboardLayout from '@/components/layout/dashboard/DashboardLayout';
 import Seo from '@/components/Seo';
 import Typography from '@/components/typography/Typography';
 
+import {
+  useVerifySignMutation,
+  verifySignMutationResponse,
+} from '@/pages/verify-signature/hook/mutation';
+
 import { FileWithPreview } from '@/types/dropzone';
 
 export default function VerifySignaturePage() {
   const methods = useForm<{ file: FileWithPreview[] }>();
   const { handleSubmit } = methods;
+  const [signData, setSignData] =
+    React.useState<verifySignMutationResponse | null>(null);
+
+  //#region  //*=========== Mutation ===========
+  const { mutateAsync: verifySign, isLoading: isVerifySignLoading } =
+    useVerifySignMutation();
+  //#endregion  //*======== Mutation ===========
 
   //#region  //*=========== Onsubmit ===========
   const onSubmit = (data: { file: FileWithPreview[] }) => {
     logger({ data }, 'index.page.tsx line 16');
+    const serializedData = serialize({ file: data.file[0] });
+
+    verifySign(serializedData)
+      .then((res) => {
+        logger(res.data.data, 'index.page.tsx line 19');
+        setSignData(res.data.data);
+      })
+      .catch(() => {
+        setSignData(null);
+      });
   };
   //#endregion  //*======== Onsubmit ===========
 
@@ -52,10 +75,39 @@ export default function VerifySignaturePage() {
                     id='file'
                     containerClassName='h-96'
                   />
-                  <Button type='submit'>Check File</Button>
+                  <Button type='submit' isLoading={isVerifySignLoading}>
+                    Check File
+                  </Button>
                 </form>
               </div>
             </FormProvider>
+
+            <div>
+              {signData && (
+                <div className='space-y-4 rounded-lg border p-4'>
+                  <Typography variant='h1'>Signature Data</Typography>
+                  <hr />
+                  <div className='space-y-5'>
+                    <div>
+                      <Typography variant='b1'>Name: </Typography>
+                      <Typography variant='h2'>{signData?.sign_by}</Typography>
+                    </div>
+
+                    <div>
+                      <Typography variant='b1'>Date: </Typography>
+                      <Typography variant='h2'>
+                        {new Date(signData?.sign_date).toDateString()}
+                      </Typography>
+                    </div>
+
+                    <div>
+                      <Typography variant='b1'>Contact: </Typography>
+                      <Typography variant='h2'>{signData?.contact}</Typography>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </section>
       </main>

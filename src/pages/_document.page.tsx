@@ -3,8 +3,6 @@ import { Head, Html, Main, NextScript } from 'next/document';
 const fonts = [
   '/fonts/OpenSauceOne/OpenSauceOne-Regular.woff2',
   '/fonts/OpenSauceOne/OpenSauceOne-Italic.woff2',
-  '/fonts/OpenSauceOne/OpenSauceOne-Semibold.woff2',
-  '/fonts/OpenSauceOne/OpenSauceOne-SemiboldItalic.woff2',
   '/fonts/OpenSauceOne/OpenSauceOne-Bold.woff2',
   '/fonts/OpenSauceOne/OpenSauceOne-BoldItalic.woff2',
 ];

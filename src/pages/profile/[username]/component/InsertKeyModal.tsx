@@ -8,7 +8,7 @@ import TextArea from '@/components/forms/TextArea';
 import Modal from '@/components/modal/Modal';
 import Typography from '@/components/typography/Typography';
 
-import { useInsertKeyMutation } from '@/pages/access-list/hook/mutation';
+import { useInsertKeyProfileMutation } from '@/pages/access-list/hook/mutation';
 import UserProfileContainer from '@/pages/profile/[username]/component/UserProfileContainer';
 
 import { ApiResponse } from '@/types/api';
@@ -20,7 +20,7 @@ export default function InsertKeyModal({ username }: { username: string }) {
   );
   const [open, setOpen] = React.useState(true);
   //#region  //*=========== Mutation ===========
-  const { mutateAsync: insertKey, isLoading } = useInsertKeyMutation();
+  const { mutateAsync: insertKey, isLoading } = useInsertKeyProfileMutation();
 
   //#endregion  //*======== Mutation ===========
 

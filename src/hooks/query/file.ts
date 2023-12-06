@@ -1,7 +1,8 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useMutation, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 
 import api from '@/lib/axios';
+import useMutationToast from '@/hooks/toast/useMutationToast';
 
 import { ApiResponse } from '@/types/api';
 import { File as FileEntities, FileType } from '@/types/entities/file';
@@ -49,3 +50,29 @@ export async function getFileQuery(
   return blobUrl;
 }
 //#endregion  //*========  ===========
+
+//#region  //*=========== Req Permission File ===========
+export type InsertKeyFileBody = {
+  fileId: string;
+  key: string;
+};
+
+export const useInsertKeyFileMutation = () => {
+  const result = useMutationToast<
+    ApiResponse<ApiResponse<unknown>>,
+    InsertKeyFileBody
+  >(
+    useMutation((data) => {
+      return api.post(`/request/file/${data.fileId}`, { key: data.key });
+    }),
+    {
+      success: 'Key access correct, processing...',
+    }
+  );
+
+  return {
+    ...result,
+  };
+};
+
+//#endregion  //*======== Req Permission File ===========

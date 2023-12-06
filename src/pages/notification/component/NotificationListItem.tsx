@@ -13,9 +13,11 @@ import { RequestAccess } from '@/types/entities/access';
 
 type NotificationListItemProps = {
   request: RequestAccess;
+  type: 'profile' | 'file';
 } & React.ComponentPropsWithoutRef<'div'>;
 
 export default function NotificationListItem({
+  type,
   className,
   request,
   ...rest
@@ -27,8 +29,9 @@ export default function NotificationListItem({
     responseAccess({
       notificationId: request.id,
       permission_status: status,
+      type: type,
     }).then(() =>
-      queryClient.invalidateQueries(['/request/list?dir=1&status=0'])
+      queryClient.invalidateQueries([`/request/${type}/list?dir=1&status=0`])
     );
   };
 
@@ -43,7 +46,7 @@ export default function NotificationListItem({
       <div className='flex w-full gap-2 sm:w-fit sm:justify-normal'>
         <Typography variant='b1' color='secondary'>
           <span className='text-white'>{request.source_user.username}</span>{' '}
-          requesting access to your drive
+          requesting access to your {type}
         </Typography>
       </div>
       <hr className='my-1 block w-full border border-white sm:hidden sm:w-fit' />
